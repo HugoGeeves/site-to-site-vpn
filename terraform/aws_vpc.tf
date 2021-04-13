@@ -1,15 +1,16 @@
 module "aws_network" {
-  source                   = "./modules/network"
-  vpc_cidr_block           = "10.0.0.0/16"
-  public_subnet_cidr_block = "10.0.1.0/24"
+  source                    = "./modules/network"
+  vpc_cidr_block            = "10.0.0.0/16"
+  public_subnet_cidr_block  = "10.0.1.0/24"
+  private_subnet_cidr_block = "10.0.2.0/24"
 }
 
 resource "aws_instance" "bastion" {
-  ami                         = "ami-096cb92bb3580c759"
-  key_name                    = aws_key_pair.bastion_key.key_name
-  instance_type               = "t2.micro"
-  vpc_security_group_ids      = [aws_security_group.bastion-sg.id]
-  subnet_id                   = module.aws_network.public_subnet_id
+  ami                    = "ami-096cb92bb3580c759"
+  key_name               = aws_key_pair.bastion_key.key_name
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.bastion-sg.id]
+  subnet_id              = module.aws_network.public_subnet_id
 }
 
 resource "aws_security_group" "bastion-sg" {
@@ -25,8 +26,8 @@ resource "aws_security_group" "bastion-sg" {
 
   egress {
     protocol    = -1
-    from_port   = 0 
-    to_port     = 0 
+    from_port   = 0
+    to_port     = 0
     cidr_blocks = ["0.0.0.0/0"]
   }
 }

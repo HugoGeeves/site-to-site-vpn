@@ -12,3 +12,8 @@ variable "private_subnet_cidr_block" {
   description = "cidr block for network private subnet (ensure higher bit mask than vpc_cidr_block)"
   type        = string
 }
+
+variable "vpc_name" {
+  description = "the name of the vpc"
+  type        = string
+}

@@ -1,9 +1,9 @@
 resource "aws_instance" "instance" {
-    ami = var.ami
-    key_name = aws_key_pair.key_pair.key_name
-    instance_type = var.instance_type
-    vpc_security_group_ids = [aws_security_group.sg.id]
-    source_dest_check = var.source_dest_check
+  ami                    = var.ami
+  key_name               = aws_key_pair.key_pair.key_name
+  instance_type          = var.instance_type
+  vpc_security_group_ids = [aws_security_group.sg.id]
+  source_dest_check      = var.source_dest_check
 }
 
 resource "aws_security_group" "sg" {

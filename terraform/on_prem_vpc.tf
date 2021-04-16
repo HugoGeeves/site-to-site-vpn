@@ -1,5 +1,6 @@
 module "on_prem_network" {
   source                    = "./modules/network"
+  vpc_name                  = "on_prem"
   vpc_cidr_block            = "10.1.0.0/16"
   public_subnet_cidr_block  = "10.1.1.0/24"
   private_subnet_cidr_block = "10.1.2.0/24"
@@ -8,23 +9,58 @@ module "on_prem_network" {
 // IPSec
 
 resource "aws_instance" "open_swan" {
-  ami                    = "ami-096cb92bb3580c759"
+  ami                    = "ami-0fbec3e0504ee1970"
   key_name               = aws_key_pair.bastion_key.key_name
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.open_swan_sg.id]
   subnet_id              = module.on_prem_network.public_subnet_id
+  source_dest_check      = false
 }
 
 resource "aws_security_group" "open_swan_sg" {
   name   = "open_swan_security_group"
   vpc_id = module.on_prem_network.vpc_id
 
-  ingress {
-    protocol    = "tcp"
-    from_port   = 22
-    to_port     = 22
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  ingress = [{
+    cidr_blocks = [
+      "0.0.0.0/0",
+    ]
+    description      = ""
+    from_port        = 22
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
+    protocol         = "tcp"
+    security_groups  = []
+    self             = false
+    to_port          = 22
+    }, {
+    cidr_blocks = [
+      "10.0.0.0/16",
+      "10.1.0.0/16",
+    ]
+    description      = ""
+    from_port        = -1
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
+    protocol         = "icmp"
+    security_groups  = []
+    self             = false
+    to_port          = -1
+    },
+    {
+      cidr_blocks = [
+        "10.0.0.0/16",
+        "10.1.0.0/16",
+      ]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "tcp"
+      security_groups  = []
+      self             = false
+      to_port          = 65535
+  }]
 
   egress {
     protocol    = -1
@@ -53,12 +89,57 @@ resource "aws_security_group" "nginx_sg" {
   name   = "nginx_security_group"
   vpc_id = module.on_prem_network.vpc_id
 
-  ingress {
-    protocol    = "tcp"
-    from_port   = 22
-    to_port     = 22
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  ingress = [{
+    cidr_blocks = [
+      "0.0.0.0/0",
+    ]
+    description      = ""
+    from_port        = 22
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
+    protocol         = "tcp"
+    security_groups  = []
+    self             = false
+    to_port          = 22
+    },
+    {
+      cidr_blocks = [
+        "10.1.0.0/16",
+      ]
+      description      = ""
+      from_port        = -1
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "icmp"
+      security_groups  = []
+      self             = false
+      to_port          = -1
+    },
+    {
+      cidr_blocks = [
+        "10.1.0.0/16",
+      ]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "tcp"
+      security_groups  = []
+      self             = false
+      to_port          = 65535
+      }, {
+      cidr_blocks = [
+        "0.0.0.0/0",
+      ]
+      description      = ""
+      from_port        = 0
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      protocol         = "udp"
+      security_groups  = []
+      self             = false
+      to_port          = 65535
+  }]
 
   egress {
     protocol    = -1

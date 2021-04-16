@@ -65,10 +65,10 @@ resource "aws_route_table_association" "network_crta_public_subnet" {
 // Private Subnet
 
 resource "aws_subnet" "network_private_subnet" {
-  vpc_id            = aws_vpc.network_vpc.id
-  cidr_block        = var.private_subnet_cidr_block
+  vpc_id                  = aws_vpc.network_vpc.id
+  cidr_block              = var.private_subnet_cidr_block
   map_public_ip_on_launch = "true"
-  availability_zone = "eu-west-2a"
+  availability_zone       = "eu-west-2a"
 
   tags = {
     Name = "${var.vpc_name}_private_subnet"
